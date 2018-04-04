@@ -9,6 +9,15 @@ import (
 	"time"
 )
 
+// Run retries the function on a 25ms interval for 2s stopping if it succeeds.
+func Run(t Failer, f func(r *R)) {
+	run(&Timer{Timeout: 2 * time.Second, Wait: 25 * time.Millisecond}, t, f)
+}
+
+func RunWith(r Retryer, t Failer, f func(r *R)) {
+	run(r, t, f)
+}
+
 // Failer is an interface compatible with testing.T.
 type Failer interface {
 	// Log is called for the final test output
@@ -16,14 +25,6 @@ type Failer interface {
 
 	// FailNow is called when the retrying is abandoned.
 	FailNow()
-}
-
-func Run(t Failer, f func(r *R)) {
-	run(&Timer{Timeout: 2 * time.Second, Wait: 25 * time.Millisecond}, t, f)
-}
-
-func RunWith(r Retryer, t Failer, f func(r *R)) {
-	run(r, t, f)
 }
 
 // Retryer provides an interface for repeating operations
