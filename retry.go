@@ -10,16 +10,16 @@ import (
 )
 
 // Run retries the function on a 25ms interval for 2s stopping if it succeeds.
-func Run(t Failer, f func(r *R)) {
+func Run(t T, f func(r *R)) {
 	run(&Timer{Timeout: 2 * time.Second, Wait: 25 * time.Millisecond}, t, f)
 }
 
-func RunWith(r Retryer, t Failer, f func(r *R)) {
+func RunWith(r Retryer, t T, f func(r *R)) {
 	run(r, t, f)
 }
 
-// Failer is an interface compatible with testing.T.
-type Failer interface {
+// T is an interface compatible with testing.T.
+type T interface {
 	// Log is called for the final test output
 	Log(args ...interface{})
 
@@ -129,7 +129,7 @@ func dedup(a []string) string {
 	return b.String()
 }
 
-func run(r Retryer, t Failer, f func(r *R)) {
+func run(r Retryer, t T, f func(r *R)) {
 	rr := &R{}
 	fail := func() {
 		out := dedup(rr.output)
