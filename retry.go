@@ -11,11 +11,11 @@ import (
 
 // Run retries the function on a 25ms interval for 2s stopping if it succeeds.
 func Run(t T, f func(r *R)) {
-	run(&Timer{Timeout: 2 * time.Second, Wait: 25 * time.Millisecond}, t, f)
+	RunWith(t, &Timer{Timeout: 2 * time.Second, Wait: 25 * time.Millisecond}, f)
 }
 
-func RunWith(r Retryer, t T, f func(r *R)) {
-	run(r, t, f)
+func RunWith(t T, r Retryer, f func(r *R)) {
+	run(t, r, f)
 }
 
 // T is an interface compatible with testing.T.
@@ -129,7 +129,7 @@ func dedup(a []string) string {
 	return b.String()
 }
 
-func run(r Retryer, t T, f func(r *R)) {
+func run(t T, r Retryer, f func(r *R)) {
 	rr := &R{}
 	fail := func() {
 		out := dedup(rr.output)
